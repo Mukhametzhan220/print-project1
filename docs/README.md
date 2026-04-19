@@ -1,4 +1,4 @@
-# Printo KZ — Документация frontend
+# Paraq KZ — Документация frontend
 
 Мобильное веб-приложение для заказа печати документов. Эта папка описывает **frontend** (Next.js 15, App Router). Документация backend — в [../backend/README.md](../backend/README.md).
 

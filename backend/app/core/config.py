@@ -9,11 +9,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     app_env: Literal["development", "staging", "production", "test"] = "development"
-    app_name: str = "Printo KZ Backend"
+    app_name: str = "Paraq KZ Backend"
     log_level: str = "INFO"
     cors_origins: str = "http://localhost:3000"
 
-    database_url: str = "postgresql+asyncpg://printo:printo@localhost:5432/printo"
+    database_url: str = "postgresql+asyncpg://paraq:paraq@localhost:5432/paraq"
 
     redis_url: str = "redis://localhost:6379/0"
 
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     s3_region: str = "us-east-1"
     s3_access_key: str = "minio"
     s3_secret_key: str = "miniominio"
-    s3_bucket: str = "printo-files"
+    s3_bucket: str = "paraq-files"
     s3_public_url_base: str | None = None
 
     file_max_size_mb: int = 25

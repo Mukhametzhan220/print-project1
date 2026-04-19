@@ -2,15 +2,15 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: printo
-      POSTGRES_PASSWORD: printo
-      POSTGRES_DB: printo
+      POSTGRES_USER: paraq
+      POSTGRES_PASSWORD: paraq
+      POSTGRES_DB: paraq
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U printo"]
+      test: ["CMD-SHELL", "pg_isready -U paraq"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -45,8 +45,8 @@ services:
       /bin/sh -c "
       sleep 5;
       /usr/bin/mc alias set local http://minio:9000 minio miniominio;
-      /usr/bin/mc mb -p local/printo-files || true;
-      /usr/bin/mc anonymous set download local/printo-files || true;
+      /usr/bin/mc mb -p local/paraq-files || true;
+      /usr/bin/mc anonymous set download local/paraq-files || true;
       exit 0;
       "
 

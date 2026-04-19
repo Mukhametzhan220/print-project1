@@ -11,7 +11,7 @@ export default function LoginPage() {
   const { phone, language, setPhone, setLanguage } = useFlow();
 
   return (
-    <MobileShell title="Welcome to Printo" subtitle="Sign in with your phone number">
+    <MobileShell title="Welcome to Paraq" subtitle="Sign in with your phone number">
       <div className="lang-switch">
         <button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>
           EN

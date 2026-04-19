@@ -40,3 +40,8 @@ class RateLimitError(AppError):
 class ConflictError(AppError):
     code = "conflict"
     default_status = status.HTTP_409_CONFLICT
+
+
+class TelegramRequiredError(AppError):
+    code = "telegram_required"
+    default_status = status.HTTP_403_FORBIDDEN

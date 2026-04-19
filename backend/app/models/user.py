@@ -10,4 +10,5 @@ class User(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     phone: Mapped[str] = mapped_column(String(32), unique=True, index=True, nullable=False)
     language: Mapped[str] = mapped_column(String(8), default="en", nullable=False)
+    telegram_chat_id: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

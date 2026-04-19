@@ -1,7 +1,8 @@
+import warnings
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -33,6 +34,8 @@ class Settings(BaseSettings):
     s3_bucket: str = "paraq-files"
     s3_public_url_base: str | None = None
 
+    telegram_bot_token: str | None = None
+
     file_max_size_mb: int = 25
     file_allowed_ext: str = "pdf,doc,docx,png,jpg,jpeg"
 
@@ -46,6 +49,14 @@ class Settings(BaseSettings):
     @classmethod
     def _strip(cls, v: str) -> str:
         return v.strip()
+
+    @model_validator(mode="after")
+    def _check_jwt_secret(self) -> 'Settings':
+        if self.app_env in ("production", "staging") and self.jwt_secret == "change-me":
+            raise ValueError("You must securely change jwt_secret in production and staging environments!")
+        elif self.jwt_secret == "change-me":
+            warnings.warn("Using default testing jwt_secret. Do not use in production!")
+        return self
 
     @property
     def allowed_extensions(self) -> set[str]:

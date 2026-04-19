@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Paraq KZ Flow",
+  title: "paraq.kz",
   description: "Production-like print ordering flow"
 };
 

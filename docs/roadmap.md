@@ -66,7 +66,7 @@
 - [ ] Деплой backend (Railway / Fly.io / собственный сервер + managed Postgres)
 - [ ] Деплой frontend (Vercel / Cloudflare Pages)
 - [ ] CI/CD (GitHub Actions): lint + typecheck + tests + build
-- [ ] HTTPS, security headers, CORS-политика на backend
+- [x] HTTPS, security headers, CORS-политика на backend
 - [ ] Мониторинг ошибок (Sentry — backend и frontend)
 - [ ] Аналитика (PostHog)
 

@@ -9,8 +9,8 @@ from app.models import User
 from app.repositories.auth_code_repo import AuthCodeRepository
 from app.repositories.user_repo import UserRepository
 from app.services.rate_limit import RateLimiter
-from app.services.sms_service import generate_code, get_sms_provider
-from app.utils.errors import UnauthorizedError, ValidationError
+from app.services.sms_service import generate_code, send_telegram_code
+from app.utils.errors import UnauthorizedError, ValidationError, TelegramRequiredError
 
 
 class AuthService:
@@ -19,9 +19,13 @@ class AuthService:
         self.codes = AuthCodeRepository(session)
         self.users = UserRepository(session)
         self.limiter = RateLimiter(redis)
-        self.sms = get_sms_provider()
+        self.limiter = RateLimiter(redis)
 
     async def send_code(self, phone: str) -> int:
+        user = await self.users.get_by_phone(phone)
+        if not user or not getattr(user, 'telegram_chat_id', None):
+            raise TelegramRequiredError("Please share your contact with Telegram bot first.")
+
         await self.limiter.hit(
             key=f"sms:{phone}",
             limit=settings.sms_rate_limit_per_min,
@@ -31,7 +35,7 @@ class AuthService:
         code = generate_code()
         expires_at = datetime.now(timezone.utc) + timedelta(seconds=settings.sms_code_ttl_seconds)
         await self.codes.create(phone=phone, code_hash=hash_secret(code), expires_at=expires_at)
-        await self.sms.send(phone, code)
+        await send_telegram_code(user.telegram_chat_id, code)
         await self.session.commit()
         return settings.sms_code_ttl_seconds
 

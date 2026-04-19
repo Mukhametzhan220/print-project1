@@ -1,5 +1,6 @@
 import logging
 import time
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -12,6 +13,7 @@ from app.api.v1.router import api_router, service_router
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.redis import close_redis
+from app.telegram_bot import run_bot, stop_bot
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +22,12 @@ logger = logging.getLogger(__name__)
 async def lifespan(_: FastAPI):
     setup_logging()
     logger.info("Starting %s (env=%s)", settings.app_name, settings.app_env)
+    bot_task = asyncio.create_task(run_bot())
     try:
         yield
     finally:
+        await stop_bot()
+        bot_task.cancel()
         await close_redis()
         logger.info("Shutdown complete")
 
@@ -40,9 +45,17 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Frame-Options"] = "DENY"
+    return response
 
 
 @app.middleware("http")

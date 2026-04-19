@@ -17,6 +17,28 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [showTelegramPrompt, setShowTelegramPrompt] = useState(false);
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (!val) return setPhone("");
+
+    let digits = val.replace(/\D/g, "");
+    
+    if (digits === "7" && phone.length > val.length && val.length < 3) return setPhone("");
+
+    if (digits.startsWith("8")) digits = "7" + digits.slice(1);
+    else if (digits.length > 0 && !digits.startsWith("7")) digits = "7" + digits;
+
+    let formatted = "";
+    if (digits.length > 0) {
+      formatted = "+7";
+      if (digits.length > 1) formatted += " " + digits.substring(1, 4);
+      if (digits.length > 4) formatted += " " + digits.substring(4, 7);
+      if (digits.length > 7) formatted += " " + digits.substring(7, 9);
+      if (digits.length > 9) formatted += " " + digits.substring(9, 11);
+    }
+    setPhone(formatted);
+  };
+
   const handleContinue = async () => {
     try {
       setLoading(true);
@@ -42,7 +64,8 @@ export default function LoginPage() {
           type="tel"
           placeholder={t.phonePlaceholder}
           value={phone}
-          onChange={(event) => setPhone(event.target.value)}
+          onChange={handlePhoneChange}
+          maxLength={16}
         />
       </label>
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
+import { useLocalStorage } from "./use-local-storage";
 
 export type PrintSettings = {
   copies: number;
@@ -14,6 +15,9 @@ type FlowState = {
   code: string;
   fileName: string;
   fileId: string | null;
+  filePreviewUrl: string | null;
+  fileSizeKb: number | null;
+  filePages: number | null;
   termsAccepted: boolean;
   paymentMethod: "kaspi" | "card" | "apple";
   settings: PrintSettings;
@@ -22,6 +26,9 @@ type FlowState = {
   setCode: (value: string) => void;
   setFileName: (value: string) => void;
   setFileId: (value: string | null) => void;
+  setFilePreviewUrl: (value: string | null) => void;
+  setFileSizeKb: (value: number | null) => void;
+  setFilePages: (value: number | null) => void;
   setTermsAccepted: (value: boolean) => void;
   setPaymentMethod: (value: "kaspi" | "card" | "apple") => void;
   setSettings: (value: PrintSettings) => void;
@@ -36,14 +43,17 @@ const defaultSettings: PrintSettings = {
 const FlowContext = createContext<FlowState | undefined>(undefined);
 
 export function FlowProvider({ children }: { children: React.ReactNode }) {
-  const [phone, setPhone] = useState("");
-  const [language, setLanguage] = useState<"en" | "ru" | "kz">("ru");
-  const [code, setCode] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [fileId, setFileId] = useState<string | null>(null);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"kaspi" | "card" | "apple">("kaspi");
-  const [settings, setSettings] = useState<PrintSettings>(defaultSettings);
+  const [phone, setPhone] = useLocalStorage("flow_phone", "");
+  const [language, setLanguage] = useLocalStorage<"en" | "ru" | "kz">("flow_lang", "ru");
+  const [code, setCode] = useLocalStorage("flow_code", "");
+  const [fileName, setFileName] = useLocalStorage("flow_fileName", "");
+  const [fileId, setFileId] = useLocalStorage<string | null>("flow_fileId", null);
+  const [filePreviewUrl, setFilePreviewUrl] = useLocalStorage<string | null>("flow_filePreviewUrl", null);
+  const [fileSizeKb, setFileSizeKb] = useLocalStorage<number | null>("flow_fileSizeKb", null);
+  const [filePages, setFilePages] = useLocalStorage<number | null>("flow_filePages", null);
+  const [termsAccepted, setTermsAccepted] = useLocalStorage("flow_termsAccepted", false);
+  const [paymentMethod, setPaymentMethod] = useLocalStorage<"kaspi" | "card" | "apple">("flow_paymentMethod", "kaspi");
+  const [settings, setSettings] = useLocalStorage<PrintSettings>("flow_settings", defaultSettings);
 
   const value = useMemo(
     () => ({
@@ -52,6 +62,9 @@ export function FlowProvider({ children }: { children: React.ReactNode }) {
       code,
       fileName,
       fileId,
+      filePreviewUrl,
+      fileSizeKb,
+      filePages,
       termsAccepted,
       paymentMethod,
       settings,
@@ -60,11 +73,14 @@ export function FlowProvider({ children }: { children: React.ReactNode }) {
       setCode,
       setFileName,
       setFileId,
+      setFilePreviewUrl,
+      setFileSizeKb,
+      setFilePages,
       setTermsAccepted,
       setPaymentMethod,
       setSettings
     }),
-    [phone, language, code, fileName, fileId, termsAccepted, paymentMethod, settings]
+    [phone, language, code, fileName, fileId, filePreviewUrl, fileSizeKb, filePages, termsAccepted, paymentMethod, settings, setPhone, setLanguage, setCode, setFileName, setFileId, setFilePreviewUrl, setFileSizeKb, setFilePages, setTermsAccepted, setPaymentMethod, setSettings]
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

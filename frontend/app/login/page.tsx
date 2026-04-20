@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MobileShell } from "@/components/mobile-shell";
+import { LangSwitcher } from "@/components/lang-switcher";
 import { PrimaryButton } from "@/components/primary-button";
 import { useState } from "react";
 import { useFlow } from "@/lib/flow-context";
@@ -57,7 +57,15 @@ export default function LoginPage() {
   };
 
   return (
-    <MobileShell title={t.welcomeTitle} subtitle={t.welcomeSubtitle}>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <LangSwitcher />
+        </div>
+        <div className="auth-card__header">
+          <h1>{t.welcomeTitle}</h1>
+          <p className="subtitle">{t.welcomeSubtitle}</p>
+        </div>
       <label className="field">
         {t.phoneNumber}
         <input
@@ -103,6 +111,7 @@ export default function LoginPage() {
       <PrimaryButton onClick={handleContinue} disabled={phone.trim().length < 8 || loading}>
         {loading ? t.sendingButton : (showTelegramPrompt ? t.botStartedButton : t.continueButton)}
       </PrimaryButton>
-    </MobileShell>
+      </div>
+    </div>
   );
 }

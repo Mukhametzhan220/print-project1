@@ -5,7 +5,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from sqlalchemy.future import select
 
 from app.core.config import settings
-from app.db.session import async_session_maker
+from app.db.session import SessionLocal
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -31,13 +31,13 @@ async def contact_received(message: types.Message):
     if not message.contact:
         return
         
-    phone = message.contact.phone_number
-    if not phone.startswith('+') and not phone.startswith('8'):
-        phone = '+' + phone
+    from app.schemas.auth import normalize_phone
+    
+    phone = normalize_phone(message.contact.phone_number)
         
     chat_id = str(message.chat.id)
 
-    async with async_session_maker() as session:
+    async with SessionLocal() as session:
         stmt = select(User).where(User.phone == phone)
         result = await session.execute(stmt)
         user = result.scalar_one_or_none()

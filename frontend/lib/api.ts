@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
 
 export class ApiError extends Error {
   status: number;
@@ -40,7 +40,11 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     } catch {
       errData = { message: response.statusText };
     }
-    throw new ApiError(errData?.error?.message || "An API error occurred", response.status, errData);
+    let message = errData?.error?.message || "An API error occurred";
+    if (errData?.detail) {
+      message = typeof errData.detail === 'string' ? errData.detail : errData.detail.message || message;
+    }
+    throw new ApiError(message, response.status, errData);
   }
 
   return response.json() as Promise<T>;

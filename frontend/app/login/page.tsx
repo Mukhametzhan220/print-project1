@@ -46,10 +46,12 @@ export default function LoginPage() {
       await api.post("/auth/send-code", { phone });
       router.push("/verify");
     } catch (err: any) {
-      if (err.data?.error?.code === "telegram_required") {
+      console.log("Login Error:", err, err.data);
+      if (err.data?.error?.code === "telegram_required" || err.data?.detail?.code === "telegram_required") {
         setShowTelegramPrompt(true);
       } else {
-        setError(err.message || "Something went wrong");
+        const errorText = err.message !== "An API error occurred" ? err.message : (err.data?.detail?.message || (err.data && JSON.stringify(err.data)) || "Something went wrong");
+        setError(`Ошибка: ${errorText}`);
       }
     } finally {
       setLoading(false);

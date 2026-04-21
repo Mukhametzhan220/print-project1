@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1 import auth, files, health, orders, payments
 
-api_router = APIRouter(prefix="/api")
+api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth.router)
 api_router.include_router(files.router)
 api_router.include_router(orders.router)

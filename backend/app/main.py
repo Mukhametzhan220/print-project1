@@ -43,9 +43,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origin_list,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -70,7 +70,7 @@ async def access_log(request: Request, call_next):
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(_: Request, exc: StarletteHTTPException):
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     detail = exc.detail
     if isinstance(detail, dict) and "code" in detail:
         body = detail
@@ -80,7 +80,7 @@ async def http_exception_handler(_: Request, exc: StarletteHTTPException):
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(_: Request, exc: RequestValidationError):
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=422,
         content={"error": {"code": "validation_error", "message": "Invalid request", "details": exc.errors()}},
@@ -88,7 +88,7 @@ async def validation_exception_handler(_: Request, exc: RequestValidationError):
 
 
 @app.exception_handler(Exception)
-async def unhandled_exception_handler(_: Request, exc: Exception):
+async def unhandled_exception_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error: %s", exc)
     return JSONResponse(
         status_code=500,
